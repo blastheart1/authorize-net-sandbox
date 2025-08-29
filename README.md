@@ -22,9 +22,8 @@ It provides a simple form for capturing payment details and securely sending tra
 ## 🔑 Environment Variables
 
 Make sure you set your credentials in .env (never commit these!):
-
-AUTH_NET_API_LOGIN_ID=your_api_login_id
-AUTH_NET_TRANSACTION_KEY=your_transaction_key
+- AUTH_NET_API_LOGIN_ID=your_api_login_id
+- AUTH_NET_TRANSACTION_KEY=your_transaction_key
 
 ## 📝 Usage
 
