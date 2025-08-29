@@ -1,11 +1,18 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
+require 'vendor/autoload.php';
+
+use Dotenv\Dotenv;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 
+// Load .env
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad(); // use safeLoad() so it won't crash if .env is missing
+
 $merchantAuthentication = new AnetAPI\MerchantAuthenticationType();
-$merchantAuthentication->setName("3Vstb64fsHM8");
-$merchantAuthentication->setTransactionKey("73PR2EZgY98f4gjy");
+$merchantAuthentication->setName($_ENV['AUTH_NET_API_LOGIN_ID']);
+$merchantAuthentication->setTransactionKey($_ENV['AUTH_NET_TRANSACTION_KEY']);
+
 
 $responseMessage = "";
 
@@ -92,21 +99,35 @@ function updateSubmitButton() {
     btn.className = Object.values(validFields).every(v => v) ? 'enabled' : '';
 }
 
-function detectCardType(input){
+function detectCardType(input) {
     let val = input.value.replace(/\D/g,''); // strip spaces
-    let type='Unknown';
-    let maxLength=16;
+    let type = 'Unknown';
+    let maxLength = 16;
 
-    if(/^4/.test(val)) type='VISA';
-    else if(/^5[1-5]/.test(val)) type='MasterCard';
-    else if(/^3[47]/.test(val)) { type='AMEX'; maxLength=15; }
-    else if(/^6(?:011|5)/.test(val)) type='Discover';
+    if (val.length === 0) {
+        type = 'Unknown';
+    } else if (/^4/.test(val)) type='VISA';
+    else if (/^5[1-5]/.test(val)) type='MasterCard';
+    else if (/^3[47]/.test(val)) { type='AMEX'; maxLength=15; }
+    else if (/^6(?:011|5)/.test(val)) type='Discover';
 
     document.getElementById('cardType').value = type;
     input.maxLength = maxLength;
     document.getElementById('cvv').maxLength = (type==='AMEX')?4:3;
 
-    // Luhn algorithm
+    // Map type to icons
+    const iconMap = {
+        'VISA': 'icons/visa.png',
+        'MasterCard': 'icons/mastercard.png',
+        'AMEX': 'icons/amex.png',
+        'Discover': 'icons/discover.png',
+        'Unknown': 'icons/unknown.png'
+    };
+
+    // Always set an icon
+    document.getElementById('cardIcon').src = iconMap[type] || iconMap['Unknown'];
+
+    // Luhn check
     let sum = 0;
     let alt = false;
     for (let i = val.length - 1; i >= 0; i--){
@@ -122,6 +143,8 @@ function detectCardType(input){
     input.className = isValid ? '' : 'invalid';
     updateSubmitButton();
 }
+
+
 
 function formatExpDate(input){
     let val=input.value.replace(/\D/g,'').slice(0,4);
@@ -206,8 +229,11 @@ function closeModal(){
 
     <form method="post">
         <label class="label">Card Number</label>
-        <input type="text" id="cardNumber" name="cardNumber" placeholder="4111111111111111" value="4111111111111111" oninput="detectCardType(this)">
-        <div id="cardError" class="error"></div>
+<div style="position: relative;">
+    <input type="text" id="cardNumber" name="cardNumber" placeholder="4111111111111111" value="4111111111111111" oninput="detectCardType(this)">
+    <img id="cardIcon" src="icons/unknown.png" alt="Card Type" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 40px; height: auto;">
+</div>
+<div id="cardError" class="error"></div>
 
         <label class="label">Card Type</label>
         <input type="text" id="cardType" disabled placeholder="Card Type">

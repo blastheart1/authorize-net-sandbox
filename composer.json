@@ -12,6 +12,7 @@
         }
     ],
     "require": {
-        "authorizenet/authorizenet": "^2.0"
+        "authorizenet/authorizenet": "^2.0",
+        "vlucas/phpdotenv": "^5.6"
     }
 }
