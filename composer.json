@@ -1,0 +1,17 @@
+{
+    "name": "thispc/authorize-net-sandbox",
+    "autoload": {
+        "psr-4": {
+            "Thispc\\AuthorizeNetSandbox\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "blastheart1",
+            "email": "antonioluis.santos1@gmail.com"
+        }
+    ],
+    "require": {
+        "authorizenet/authorizenet": "^2.0"
+    }
+}
